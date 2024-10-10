@@ -1,0 +1,2 @@
+# Discord-Auto-Poster
+An automatic Discord bot that periodically sends text (.txt) and PDF (.pdf) files to a designated channel. Perfect for sharing articles, documents, or other content at regular intervals. The bot handles the sending schedule and informs the owner of any errors. Configured using a .env file.
