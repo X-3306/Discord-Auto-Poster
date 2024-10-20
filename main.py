@@ -67,6 +67,13 @@ async def send_daily_article():
             elif file_name.endswith('.pdf'):
                 await channel.send(f"**New PDF book: {file_name}**")
                 await channel.send(file=discord.File(file_path))
+                # Delete PDF file after sending
+                try:
+                    os.remove(file_path)
+                    logging.info(f"Successfully deleted PDF file: {file_name}")
+                except Exception as e:
+                    logging.error(f"Error deleting PDF file {file_name}: {e}")
+                    await send_error_to_user(f"Failed to delete PDF file {file_name}: {e}")
 
             logging.info(f"Sent article: {file_name}")
         except Exception as e:
@@ -76,7 +83,6 @@ async def send_daily_article():
         await send_error_to_user("Resources exhausted. Please add new files.")
         await load_files()
 
-
 async def send_error_to_user(message):
     user = bot.get_user(USER_ID)
     if user is None:
@@ -85,13 +91,12 @@ async def send_error_to_user(message):
         try:
             await user.send(message)
         except discord.errors.Forbidden:
-            logging.error(f"Unable to send a message to the user {USER_ID}.  Missing permissions.")
+            logging.error(f"Unable to send a message to the user {USER_ID}. Missing permissions.")
         except Exception as e:
             logging.error(f"Error sending message to user: {e}")
 
 @bot.event
 async def on_error(event, *args, **kwargs):
     logging.error(f"Unhandled error in event {event}", exc_info=True)
-
 
 bot.run(os.getenv('TOKEN'))
